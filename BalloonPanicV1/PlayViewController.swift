@@ -25,6 +25,9 @@ class PlayViewController: UIViewController {
     var balloonCount = 0
     var balloonInterval = 60
     var balloonArray = [Balloon]()
+    var balloonTrashArray = [Balloon]()
+    var balloonRemoveInterval = [Int]()
+    
     
     @IBOutlet var bird: Bird!
     @IBOutlet var scoreLabel: UILabel!
@@ -105,6 +108,7 @@ class PlayViewController: UIViewController {
         
         
         //風船の移動
+        let trashImageNames = ["blueTrash.png", "greenTrash.png", "yellowTrash.png", "orangeTrash.png", "redTrash.png"]
         for i in (0..<balloonArray.count).reversed() { // reversed()で逆ループ
             
             let balloon = balloonArray[i]
@@ -113,10 +117,18 @@ class PlayViewController: UIViewController {
             
             // 衝突判定
             if abs(bird.center.x - balloon.center.x) < 30 && abs(bird.center.y - balloon.center.y) < 30 { // 絶対値で判定
-                score += 1
+                score += balloon.bpoint
                 scoreLabel.text = "\(score)"
                 balloonArray.remove(at: i)
-                balloon.removeFromSuperview()
+                //balloon.removeFromSuperview()
+                
+                let image = UIImage(named: trashImageNames[balloon.bpoint-1])
+                balloon.image = image
+                UIView.animate(withDuration: 0.2, animations: {
+                    balloon.transform = CGAffineTransform(scaleX: 2.0, y: 2.0)
+                });//balloon.removeFromSuperview()
+                balloonTrashArray.append(balloon)
+                balloonRemoveInterval.append(0)
             }
             
             
@@ -125,6 +137,8 @@ class PlayViewController: UIViewController {
                 balloonArray.remove(at: i)
                 balloon.removeFromSuperview()
             }
+            
+            
         }
         
         // 風船の発生
@@ -144,14 +158,17 @@ class PlayViewController: UIViewController {
             balloonCount += 1
         }
         
-        // スコア
-//        if scoreCount >= scoreInterval {
-//            score += 1
-//            scoreLabel.text = "\(score)"
-//            scoreCount = 0
-//        }else{
-//            scoreCount += 1
-//        }
+        //風船のゴミの消去
+        for i in (0..<balloonTrashArray.count).reversed(){
+            let balloon = balloonTrashArray[i]
+            if balloonRemoveInterval[i] > 15 {
+                balloon.removeFromSuperview()
+                balloonTrashArray.remove(at: i)
+                balloonRemoveInterval.remove(at: i)
+            }else{
+                balloonRemoveInterval[i] += 1
+            }
+        }
     }
     
     func finishGame(){
