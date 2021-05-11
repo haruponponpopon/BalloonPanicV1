@@ -7,19 +7,23 @@
 
 import UIKit
 
+
 class ResultViewController: UIViewController {
     
     var result = 0
     
     @IBOutlet var resultLabel: UILabel!
+    
+    @IBOutlet weak var gameoverLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         resultLabel.text = "\(result)"
-
+        
         // Do any additional setup after loading the view.
     }
+    
     
 
     /*
